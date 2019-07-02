@@ -35,7 +35,7 @@ function appendPokemon() {
 
     if(currentTeam.roster[i] != null){
         $('.output').append(`<div class="card"><img class="${currentTeam.roster[i].name}${i}" src="${currentTeam.roster[i].sprites.front_default}"></div>`);
-        $(`img.${currentTeam.roster[i].name}${i}`).click(function() {
+        $(`.card`).click(function() {
           currentTeam.roster[i] = null;
           console.log("image click event");
           this.remove();
@@ -44,6 +44,14 @@ function appendPokemon() {
       }
   }
 
+}
+
+function pokemonNullChecker(pokemon){
+  if (pokemon.sprites.front_default != null) {
+      return true;
+  } else {
+    return false;
+  }
 }
 
 
@@ -80,6 +88,10 @@ $(document).ready(function(){
   function randomTeam() {
     currentTeam.roster = [];
     $(".output").empty();
+    $(".poke-random").off('click');
+    setTimeout(function() {
+      $(".poke-random").on('click', randomTeam);
+    }, 2500);
 
       for (let i = 0; i < 6; i++) {
         let pokeRequest = new XMLHttpRequest();
@@ -90,7 +102,8 @@ $(document).ready(function(){
           if(this.readyState === 4 && this.status === 200){
             const response = JSON.parse(this.responseText);
             let randomNum = Math.floor(Math.random()  * response.results.length)
-            pokeAPIRequest(response.results[randomNum].name);
+              pokeAPIRequest(response.results[randomNum].name);
+
           }
         }
 
@@ -98,6 +111,11 @@ $(document).ready(function(){
         pokeRequest.send();
       }
 
+      if(currentTeam.roster > 6) {
+        console.log('bonus pokemon detected! POP POP!');
+        currentTeam.roster.pop();
+        currentTeam.roster.pop();
+      }
     }
 
 
