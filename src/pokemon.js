@@ -4,9 +4,7 @@ export class PokemonTeam{
       this.roster = [];
     }
 
-    addPokemon(pokemon){
-      this.battleRoster.push(pokemon);
-    }
+  
 
     pokeCounter() {
       let pokemon = 0;

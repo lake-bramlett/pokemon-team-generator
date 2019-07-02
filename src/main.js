@@ -14,6 +14,10 @@ function pokeAPIRequest(pokemonName){
   pokeRequest.onreadystatechange = function(){
     if(this.readyState === 4 && this.status === 200){
       const response = JSON.parse(this.responseText);
+      console.log(response);
+
+      // IDEA: add IDs to objects as they come in from API, importing UUID
+      response.id = "testId"
       currentTeam.roster.push(response);
       appendPokemon();
     }
