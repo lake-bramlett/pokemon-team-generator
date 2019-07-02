@@ -6,64 +6,103 @@ import {Pokemon, PokemonTeam} from "./pokemon.js";
 const currentTeam = new PokemonTeam();
 
 
+function pokeAPIRequest(pokemonName){
+
+  let pokeRequest = new XMLHttpRequest();
+  const pokeurl = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
+
+  pokeRequest.onreadystatechange = function(){
+    if(this.readyState === 4 && this.status === 200){
+      const response = JSON.parse(this.responseText);
+      currentTeam.roster.push(response);
+      appendPokemon();
+    }
+  }
+
+  pokeRequest.open("GET", pokeurl, true);
+  pokeRequest.send();
+
+  // $('.output').text("");
+
+  console.log(currentTeam);
+
+}
+
+function appendPokemon() {
+  $(".output").empty();
+  for (let i = 0; i < currentTeam.roster.length; i++){
+    console.log(`roster: ${currentTeam.roster}, index: ${[i]}`);
+
+    if(currentTeam.roster[i] != null){
+        $('.output').append(`<div class="card"><img class="${currentTeam.roster[i].name}${i}" src="${currentTeam.roster[i].sprites.front_default}"></div>`);
+        $(`img.${currentTeam.roster[i].name}${i}`).click(function() {
+          currentTeam.roster[i] = null;
+          console.log("image click event");
+          this.remove();
+          // appendPokemon();
+        })
+      }
+  }
+
+}
+
+
+
 
 $(document).ready(function(){
 
 
+  $('.poke-random').click(function() {
+    console.log('click');
+    randomTeam();
+  });
 
   $(".poke-button").click(function(event){
     event.preventDefault();
-    if(currentTeam.roster.length < 6) {
-      const pokeName = $('.poke-input').val().toLowerCase();
+    console.log(currentTeam.pokeCounter());
+    const pokeName = $('.poke-input').val().toLowerCase();
 
-      let pokeRequest = new XMLHttpRequest();
-      const pokeurl = `https://pokeapi.co/api/v2/pokemon/${pokeName}`;
+    if( currentTeam.pokeCounter() < 6) {
+      pokeAPIRequest(pokeName);
+    }
+    });
 
-      pokeRequest.onreadystatechange = function(){
-        if(this.readyState === 4 && this.status === 200){
-          const response = JSON.parse(this.responseText);
-          currentTeam.roster.push(response);
-          appendPokemon();
+
+
+
+
+  $('.poke-remove').click(function() {
+    currentTeam.roster = [];
+    $(".output").empty();
+    console.log(currentTeam);
+  })
+
+  function randomTeam() {
+    currentTeam.roster = [];
+    $(".output").empty();
+
+      for (let i = 0; i < 6;) {
+        let pokeRequest = new XMLHttpRequest();
+        const pokeurl = `https://pokeapi.co/api/v2/pokemon?offset=0&limit=964`;
+
+
+        pokeRequest.onreadystatechange = function(){
+          if(this.readyState === 4 && this.status === 200){
+            const response = JSON.parse(this.responseText);
+            let randomNum = Math.floor(Math.random()  * response.results.length)
+            pokeAPIRequest(response.results[randomNum].name);
+          }
         }
+
+        pokeRequest.open("GET", pokeurl, true);
+        pokeRequest.send();
       }
 
-      pokeRequest.open("GET", pokeurl, true);
-      pokeRequest.send();
-
-      // $('.output').text("");
-
-      console.log(currentTeam);
-
     }
 
 
-    $('.poke-remove').click(function() {
-      currentTeam.roster = [];
-      $(".output").empty();
-      console.log(currentTeam);
-    })
 
 
 
-  });
 
-  function appendPokemon() {
-    $(".output").empty();
-    for (let i = 0; i < currentTeam.roster.length; i++){
-      console.log(`roster: ${currentTeam.roster}, index: ${[i]}`);
-
-      if(currentTeam.roster[i] != null){
-          $('.output').append(`<div class="card"><img class="${currentTeam.roster[i].name}${i}" src="${currentTeam.roster[i].sprites.front_default}"></div>`);
-          $(`img.${currentTeam.roster[i].name}${i}`).click(function() {
-            currentTeam.roster.splice([i]);
-            console.log("image click event");
-            this.remove();
-          })
-        }
-    }
-
-  }
-
-
-
-})
+});
