@@ -81,7 +81,7 @@ $(document).ready(function(){
     currentTeam.roster = [];
     $(".output").empty();
 
-      for (let i = 0; i < 6;) {
+      for (let i = 0; i < 6; i++) {
         let pokeRequest = new XMLHttpRequest();
         const pokeurl = `https://pokeapi.co/api/v2/pokemon?offset=0&limit=964`;
 
